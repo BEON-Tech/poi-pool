@@ -11,6 +11,17 @@ async function main() {
   
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
+  const Token = await ethers.getContractFactory("MockUBI");
+  console.log("Deploying MUBI Coin...");
+
+  const token = await upgrades.deployProxy(
+    Token,
+    [],
+    {}
+  );
+  
+  console.log("MUBI deployed to:", token.address);
+
   const Pool = await ethers.getContractFactory("PoIPool");
   console.log("Deploying PoIPool...");
 
@@ -18,7 +29,7 @@ async function main() {
     Pool,
     [
       token.address,
-      deploymentParams.INITIAL_SUPPLY
+      deploymentParams.MAX_UBI_PER_RECIPIENT
     ],
     {
       initializer: 'initialize',
