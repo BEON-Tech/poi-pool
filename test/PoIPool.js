@@ -1,7 +1,6 @@
 const { default: BigNumber } = require("bignumber.js");
 const { expect } = require("chai");
 const deploymentParams = require('../deployment-params');
-const testUtils = require("./testUtils");
 const moment = require("moment");
 const { network, upgrades } = require("hardhat");
 
@@ -15,41 +14,26 @@ contract('PoIPool.sol', accounts => {
     before(async () => {
         accounts = await ethers.getSigners();
 
-        /*[_addresses, mockProofOfHumanity] = await Promise.all([
+        [_addresses, mockProofOfHumanity] = await Promise.all([
             Promise.all(accounts.map((account) => account.getAddress())),
             waffle.deployMockContract(
                 accounts[0],
-                require("../artifacts/contracts/UBI.sol/IProofOfHumanity.json").abi
+                require("../artifacts/contracts/MockUBI.sol/MockUBI.json").abi
             )
         ]);
-        setSubmissionIsRegistered = (submissionID, isRegistered) =>
-            mockProofOfHumanity.mock.isRegistered
-                .withArgs(submissionID)
-                .returns(isRegistered);
-
-        setSubmissionInfo = (submissionID, info) => {
-            mockProofOfHumanity.mock.getSubmissionInfo
-                .withArgs(submissionID)
-                .returns({
-                    submissionTime: info.submissionTime
-                });
-        }
 
         addresses = _addresses;
 
-        UBI_V1 = await ethers.getContractFactory("UBI");
+        MockUBICoin = await ethers.getContractFactory("MockUBI");
 
-        ubi = await upgrades.deployProxy(UBI_V1,
-            [deploymentParams.INITIAL_SUPPLY, deploymentParams.TOKEN_NAME, deploymentParams.TOKEN_SYMBOL, deploymentParams.ACCRUED_PER_SECOND, mockProofOfHumanity.address],
+        ubi = await upgrades.deployProxy(MockUBICoin,
+            [deploymentParams.MAX_UBI_PER_RECIPIENT],
             { initializer: 'initialize', unsafeAllowCustomTypes: true }
         );
 
-        UBICoin = await ethers.getContractFactory("UBI");
         ubi = await upgrades.upgradeProxy(ubi.address, UBICoin);
         await ubi.deployed();
 
-        // Initialize values on upgraded contract.
-        await ubi.upgrade();
 
         // For testing purposes only, we define a max of 10 streams allowed
         await ubi.setMaxStreamsAllowed(10);
@@ -65,7 +49,7 @@ contract('PoIPool.sol', accounts => {
 
         const deletageUBIFactory = await ethers.getContractFactory("DelegateUBIToPool");
         deletageUBI = await upgrades.deployProxy(deletageUBIFactory, [mockProofOfHumanity.address, ubi.address]);
-        await deletageUBI.deployed();*/
+        await deletageUBI.deployed();
     });
 
     /*const ubiCoinTests = () => {

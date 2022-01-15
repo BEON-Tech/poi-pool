@@ -17,21 +17,25 @@ interface IUBI {
     returns (
       bool transferred
     );
+  function withdrawFromStream(uint256 streamId)
+    external
+    returns (
+      bool withdrawn
+    );
 }
 
-contract PoIPool is Initializable {
+contract PoIPoolUBI is Initializable {
 
   using SafeMath for uint256;
 
   /* Events */
 
+  event UBIClaimed(uint256 totalStreams);
   event UBIDistributed(uint256 totalHumans, uint256 totalUBI);
 
   /* Storage */
   IUBI public ubi;
   address public governor;
-  mapping(address => bool) public allowedRecipients;
-  uint256 public recipientsCount;
   uint256 public maxUBIPerRecipient;
 
   /// @dev Verifies that the sender has ability to modify governed parameters.
@@ -46,36 +50,22 @@ contract PoIPool is Initializable {
     ubi = _ubi;
     maxUBIPerRecipient = _maxUBIPerRecipient;
     governor = msg.sender;
-    recipientsCount = 0;
   }
 
-  function addRecipient(address _human) public onlyByGovernor returns (bool) {
-    require(_human != address(0x00), "Cannot add the zero address");
-    require(_human != address(this), "Cannot add the contract itself");
-    require(!allowedRecipients[_human], "Recipient already allowed");
-    allowedRecipients[_human] = true;
-    recipientsCount++;
+  function claimUBIFromStreams(uint256[] calldata _streamIds) external onlyByGovernor returns (bool) {
+    uint256 totalStreams = 0;
+    for(uint i = 0; i < _streamIds.length; i++) {
+      uint256 currentStream = _streamIds[i];
+      if(ubi.withdrawFromStream(currentStream)) {
+        totalStreams++;
+      }
+    }
+
+    emit UBIClaimed(totalStreams);
+
     return true;
   }
 
-  function removeRecipient(address _human) public onlyByGovernor returns (bool) {
-    require(allowedRecipients[_human], "Recipient is not registered");
-    allowedRecipients[_human] = false;
-    recipientsCount--;
-    return true;
-  }
-
-  function isRecipient(address _human) public view returns (bool) {
-    return allowedRecipients[_human];
-  }
-
-  /* TODO: claim UBIs from a list of streams */
-  function claimUBIFromStreams() public onlyByGovernor returns (bool) {
-    // TODO
-    return true;
-  }
-
-  /* TODO: set Max UBI per recipient + category */
   function changeMaxUBIPerRecipient(uint256 _maxUBIPerRecipient) external onlyByGovernor {
     maxUBIPerRecipient = _maxUBIPerRecipient;
   }
@@ -84,10 +74,11 @@ contract PoIPool is Initializable {
     ubi = _ubi;
   }
 
-  function distributeUBIToRecipients(address[] memory _humans) public onlyByGovernor returns (bool) {
+  function distributeUBIToRecipients(address[] calldata _humans, uint256 _totalRecipients) external onlyByGovernor returns (bool) {
     require(address(ubi) != address(0x00), "UBI contract has not been assigned");
-    require(recipientsCount > 0, "Number of recipients must be greater than zero");
-    uint256 valueToDistribute = ubi.balanceOf(address(this)).div(recipientsCount);
+    require(_totalRecipients > 0, "Total recipients must be greater than zero");
+    require(_humans.length <= 0, "Number of humans must be greater than total recipients");
+    uint256 valueToDistribute = ubi.balanceOf(address(this)).div(_totalRecipients);
     if(valueToDistribute > maxUBIPerRecipient) {
       valueToDistribute = maxUBIPerRecipient;
     }
@@ -97,11 +88,9 @@ contract PoIPool is Initializable {
     uint256 totalTransferred = 0;
     for(uint i = 0; i < _humans.length; i++) {
       address currentHuman = _humans[i];
-      if(isRecipient(currentHuman)) {
-        if(ubi.transfer(currentHuman, valueToDistribute)) {
-          totalHumans++;
-          totalTransferred = totalTransferred.add(valueToDistribute);
-        }
+      if(ubi.transfer(currentHuman, valueToDistribute)) {
+        totalHumans++;
+        totalTransferred = totalTransferred.add(valueToDistribute);
       }
     }
 
