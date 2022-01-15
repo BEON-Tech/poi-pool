@@ -77,7 +77,7 @@ contract PoIPoolUBI is Initializable {
   function distributeUBIToRecipients(address[] calldata _humans, uint256 _totalRecipients) external onlyByGovernor returns (bool) {
     require(address(ubi) != address(0x00), "UBI contract has not been assigned");
     require(_totalRecipients > 0, "Total recipients must be greater than zero");
-    require(_humans.length <= 0, "Number of humans must be greater than total recipients");
+    require(_humans.length <= _totalRecipients, "Number of humans must be greater than total recipients");
     uint256 valueToDistribute = ubi.balanceOf(address(this)).div(_totalRecipients);
     if(valueToDistribute > maxUBIPerRecipient) {
       valueToDistribute = maxUBIPerRecipient;
