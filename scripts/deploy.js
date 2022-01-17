@@ -11,11 +11,11 @@ async function main() {
   
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Pool = await ethers.getContractFactory("PoIPoolUBI");
+  const PoolUBI = await ethers.getContractFactory("PoIPoolUBI");
   console.log("Deploying PoIPoolUBI...");
 
-  const pool = await upgrades.deployProxy(
-    Pool,
+  const poolUBI = await upgrades.deployProxy(
+    PoolUBI,
     [
       deploymentParams.UBI_TOKEN_ADDRESS,
       deploymentParams.MAX_UBI_PER_RECIPIENT
@@ -26,7 +26,21 @@ async function main() {
     }
   );
 
-  console.log("PoIPoolUBI deployed to:", pool.address);
+  console.log("PoIPoolUBI deployed to:", poolUBI.address);
+
+  const PoolERC20 = await ethers.getContractFactory("PoIPoolERC20");
+  console.log("Deploying PoolERC20...");
+
+  const poolERC20 = await upgrades.deployProxy(
+    PoolERC20,
+    [],
+    {
+      initializer: 'initialize',
+      unsafeAllowCustomTypes: true
+    }
+  );
+
+  console.log("PoolERC20 deployed to:", poolERC20.address);
 }
 
 main()
