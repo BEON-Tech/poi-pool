@@ -117,11 +117,11 @@ contract PoIPoolERC20 is Initializable {
 
   /* Swap Tokens */
 
-  function swapTokenForDAI(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external returns (uint256 amountOut) {
+  function swapTokenForDAI(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256 amountOut) {
     return swapTokenForToken(_tokenIn, DAI, _amount, _poolFee, _deadline, false);
   }
 
-  function swapTokenForETH(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external returns (uint256 amountOut) {
+  function swapTokenForETH(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256 amountOut) {
     return swapTokenForToken(_tokenIn, WETH9, _amount, _poolFee, _deadline, true);
   }
 

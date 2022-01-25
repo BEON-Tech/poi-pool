@@ -46,7 +46,7 @@ async function main() {
 
   console.log("PoolERC20 deployed to:", poolERC20.address);
 
-  console.log("Deploying mock tokens...");
+  /*console.log("Deploying mock tokens...");
 
   const MockToken = await ethers.getContractFactory("MockToken");
   const mockToken = await MockToken.deploy();
@@ -62,7 +62,7 @@ async function main() {
     }
   );
 
-  console.log("MockUpgradeableToken deployed to:", mockUpgradeableToken.address);
+  console.log("MockUpgradeableToken deployed to:", mockUpgradeableToken.address);*/
 }
 
 main()
