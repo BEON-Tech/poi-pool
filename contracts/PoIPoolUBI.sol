@@ -34,8 +34,8 @@ contract PoIPoolUBI is Initializable {
   event UBIDistributed(uint256 totalHumans, uint256 totalUBI);
 
   /* Storage */
-  IUBI public ubi;
   address public governor;
+  IUBI public ubi;
   uint256 public maxUBIPerRecipient;
 
   /// @dev Verifies that the sender has ability to modify governed parameters.
@@ -47,9 +47,9 @@ contract PoIPoolUBI is Initializable {
   /* Initializer */
 
   function initialize(IUBI _ubi, uint256 _maxUBIPerRecipient) public initializer {
+    governor = msg.sender;
     ubi = _ubi;
     maxUBIPerRecipient = _maxUBIPerRecipient;
-    governor = msg.sender;
   }
 
   function claimUBIFromStreams(uint256[] calldata _streamIds) external onlyByGovernor returns (bool) {

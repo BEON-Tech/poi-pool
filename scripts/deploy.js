@@ -33,7 +33,11 @@ async function main() {
 
   const poolERC20 = await upgrades.deployProxy(
     PoolERC20,
-    [],
+    [
+      deploymentParams.SWAP_ROUTER_ADDRESS,
+      deploymentParams.DAI,
+      deploymentParams.WETH9
+    ],
     {
       initializer: 'initialize',
       unsafeAllowCustomTypes: true

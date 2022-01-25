@@ -29,6 +29,7 @@
     "@openzeppelin/contracts": "^4.4.1",
     "@openzeppelin/contracts-upgradeable": "^4.4.1",
     "@openzeppelin/hardhat-upgrades": "^1.6.0",
+    "@uniswap/v3-periphery": "^1.4.0",
     "bignumber.js": "^9.0.1",
     "chai": "^4.2.0",
     "chai-as-promised": "7.1.1",

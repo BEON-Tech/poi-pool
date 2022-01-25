@@ -4,7 +4,13 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "hardhat/console.sol";
+
+interface IWETH9 {
+    function withdraw(uint wad) external;
+}
 
 contract PoIPoolERC20 is Initializable {
 
@@ -19,6 +25,9 @@ contract PoIPoolERC20 is Initializable {
 
   /* Storage */
   address public governor;
+  address public DAI;
+  address public WETH9;
+  ISwapRouter public swapRouter;
 
   /// @dev Verifies that the sender has ability to modify governed parameters.
   modifier onlyByGovernor() {
@@ -28,8 +37,23 @@ contract PoIPoolERC20 is Initializable {
 
   /* Initializer */
 
-  function initialize() public initializer {
+  function initialize(ISwapRouter _swapRouter, address _DAI, address _WETH9) public initializer {
     governor = msg.sender;
+    DAI = _DAI;
+    WETH9 = _WETH9;
+    swapRouter = _swapRouter;
+  }
+
+  function changeDAITokenAddress(address _DAI) external onlyByGovernor {
+    DAI = _DAI;
+  }
+
+  function changeWETH9TokenAddress(address _WETH9) external onlyByGovernor {
+    WETH9 = _WETH9;
+  }
+
+  function changeISwapRouter(ISwapRouter _swapRouter) external onlyByGovernor {
+    swapRouter = _swapRouter;
   }
 
   /* Handle Ether */
@@ -60,6 +84,13 @@ contract PoIPoolERC20 is Initializable {
     payable(_to).transfer(_amount);
     emit TransferEtherSent(_to, _amount);
   }
+
+  /* Handle DAI */
+
+  function getDAIBalance() public view returns (uint256) {
+    IERC20Upgradeable DAIToken = IERC20Upgradeable(DAI);
+    return DAIToken.balanceOf(address(this));
+  }
   
   /* Handle other ERC20 tokens */
 
@@ -82,6 +113,50 @@ contract PoIPoolERC20 is Initializable {
     require(_amount <= balance, "Insufficient funds");
     _token.safeTransfer(_to, _amount);
     emit TransferERC20Sent(address(_token), _to, _amount);
+  }
+
+  /* Swap Tokens */
+
+  function swapTokenForDAI(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external returns (uint256 amountOut) {
+    return swapTokenForToken(_tokenIn, DAI, _amount, _poolFee, _deadline, false);
+  }
+
+  function swapTokenForETH(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external returns (uint256 amountOut) {
+    return swapTokenForToken(_tokenIn, WETH9, _amount, _poolFee, _deadline, true);
+  }
+
+  function swapTokenForToken(address _tokenIn, address _tokenOut, uint256 _amount, uint24 _poolFee, uint256 _deadline, bool _unwrap) internal returns (uint256 amountOut) {
+    require(getERC20Balance(IERC20Upgradeable(_tokenIn)) > 0, "Insufficient funds");
+
+    TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amount);
+
+    ISwapRouter.ExactInputSingleParams memory params =
+      ISwapRouter.ExactInputSingleParams({
+        tokenIn: _tokenIn,
+        tokenOut: _tokenOut,
+        fee: _poolFee,
+        recipient: address(this),
+        deadline: _deadline,
+        amountIn: _amount,
+        amountOutMinimum: 0,
+        sqrtPriceLimitX96: 0
+      });
+
+    amountOut = swapRouter.exactInputSingle(params);
+
+    if(_unwrap) {
+      unwrapWETH(amountOut);
+    }
+
+    return amountOut;
+  }
+
+  function unwrapWETH(uint256 _amount) internal {
+    IWETH9 weth9 = IWETH9(WETH9);
+
+    if(_amount != 0) {
+      weth9.withdraw(_amount);
+    }
   }
 
 }
