@@ -45,24 +45,6 @@ async function main() {
   );
 
   console.log("PoolERC20 deployed to:", poolERC20.address);
-
-  /*console.log("Deploying mock tokens...");
-
-  const MockToken = await ethers.getContractFactory("MockToken");
-  const mockToken = await MockToken.deploy();
-  console.log("MockToken deployed to:", mockToken.address);
-
-  const MockUpgradeableToken = await ethers.getContractFactory("MockUpgradeableToken");
-  const mockUpgradeableToken = await upgrades.deployProxy(
-    MockUpgradeableToken,
-    [],
-    {
-      initializer: 'initialize',
-      unsafeAllowCustomTypes: true
-    }
-  );
-
-  console.log("MockUpgradeableToken deployed to:", mockUpgradeableToken.address);*/
 }
 
 main()

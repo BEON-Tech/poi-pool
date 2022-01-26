@@ -8,7 +8,7 @@ import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "hardhat/console.sol";
 
 interface IWETH9 {
-    function withdraw(uint wad) external;
+  function withdraw(uint wad) external;
 }
 
 contract PoIPoolERC20 is Initializable {
@@ -17,7 +17,7 @@ contract PoIPoolERC20 is Initializable {
 
   /* Events */
 
-  event Received(address sender, uint256 amount);
+  event EtherReceived(address sender, uint256 amount);
   event TransferEtherSent(address receiver, uint256 amount);
   event TransferERC20Sent(address token, address receiver, uint256 amount);
 
@@ -57,16 +57,24 @@ contract PoIPoolERC20 is Initializable {
   /* Handle Ether */
 
   fallback() external payable {
-    emit Received(msg.sender, msg.value);
+    emit EtherReceived(msg.sender, msg.value);
   }
     
   receive() external payable {
-    emit Received(msg.sender, msg.value);
+    emit EtherReceived(msg.sender, msg.value);
   }
+
+  /* Get Balances */
 
   function getEtherBalance() public view returns (uint256) {
     return address(this).balance;
   }
+
+  function getERC20Balance(IERC20Upgradeable _token) public view returns (uint256) {
+    return _token.balanceOf(address(this));
+  }
+
+  /* Withdraw to governor's wallet & transfer */
 
   function withdrawEther(uint256 _amount) external onlyByGovernor {
     require(_amount <= getEtherBalance(), "Insufficient funds");
@@ -81,19 +89,6 @@ contract PoIPoolERC20 is Initializable {
     require(_amount <= getEtherBalance(), "Insufficient funds");
     payable(_to).transfer(_amount);
     emit TransferEtherSent(_to, _amount);
-  }
-
-  /* Handle DAI */
-
-  function getDAIBalance() public view returns (uint256) {
-    IERC20Upgradeable DAIToken = IERC20Upgradeable(DAI);
-    return DAIToken.balanceOf(address(this));
-  }
-  
-  /* Handle other ERC20 tokens */
-
-  function getERC20Balance(IERC20Upgradeable _token) public view returns (uint256) {
-    return _token.balanceOf(address(this));
   }
 
   function withdrawERC20(IERC20Upgradeable _token, uint256 _amount) external onlyByGovernor {
@@ -115,15 +110,15 @@ contract PoIPoolERC20 is Initializable {
 
   /* Swap Tokens */
 
-  function swapTokenForDAI(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256 amountOut) {
+  function swapTokenForDAI(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256) {
     return swapTokenForToken(_tokenIn, DAI, _amount, _poolFee, _deadline, false);
   }
 
-  function swapTokenForETH(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256 amountOut) {
+  function swapTokenForETH(address _tokenIn, uint256 _amount, uint24 _poolFee, uint256 _deadline) external onlyByGovernor returns (uint256) {
     return swapTokenForToken(_tokenIn, WETH9, _amount, _poolFee, _deadline, true);
   }
 
-  function swapTokenForToken(address _tokenIn, address _tokenOut, uint256 _amount, uint24 _poolFee, uint256 _deadline, bool _unwrap) internal returns (uint256 amountOut) {
+  function swapTokenForToken(address _tokenIn, address _tokenOut, uint256 _amount, uint24 _poolFee, uint256 _deadline, bool _unwrap) internal returns (uint256) {
     require(getERC20Balance(IERC20Upgradeable(_tokenIn)) > 0, "Insufficient funds");
 
     TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amount);
@@ -140,7 +135,7 @@ contract PoIPoolERC20 is Initializable {
         sqrtPriceLimitX96: 0
       });
 
-    amountOut = swapRouter.exactInputSingle(params);
+    uint256 amountOut = swapRouter.exactInputSingle(params);
 
     if(_unwrap) {
       unwrapWETH(amountOut);
