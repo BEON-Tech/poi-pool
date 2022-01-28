@@ -53,6 +53,8 @@ contract PoIPoolUBI is Initializable {
   }
 
   function claimUBIFromStreams(uint256[] calldata _streamIds) external onlyByGovernor returns (bool) {
+    require(address(ubi) != address(0x00), "UBI contract has not been assigned");
+    require(_streamIds.length > 0, "Number of Stream IDs must be greater than zero");
     uint256 totalStreams = 0;
     for(uint i = 0; i < _streamIds.length; i++) {
       uint256 currentStream = _streamIds[i];
