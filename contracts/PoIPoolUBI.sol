@@ -30,6 +30,7 @@ contract PoIPoolUBI is Initializable {
   event UBIDistributed(uint256 totalHumans, uint256 totalUBI);
 
   /* Storage */
+  
   address public governor;
   IUBI public ubi;
   uint256 public maxUBIPerRecipient;

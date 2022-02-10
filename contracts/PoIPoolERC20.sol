@@ -22,6 +22,7 @@ contract PoIPoolERC20 is Initializable {
   event TransferERC20Sent(address token, address receiver, uint256 amount);
 
   /* Storage */
+  
   address public governor;
   address public DAI;
   address public WETH9;
