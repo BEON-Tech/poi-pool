@@ -218,6 +218,10 @@ contract ProofOfIntegrity is Initializable {
     approvedApplicants[_applicantWallet].associatedGrantedApplicationIds.push(_databaseId);
   }
 
+  function getGrantedApplicationIds() external view returns (uint256[] memory) {
+    return grantedApplicationIds;
+  }
+
   function getGrantedApplication(uint256 _databaseId) external view returns (address _certifier, address _applicant, uint256 _registrationDate, bytes32 _evidenceHash) {
     require(grantedApplicationIsRegistered(_databaseId), "Invalid Application ID");
 
