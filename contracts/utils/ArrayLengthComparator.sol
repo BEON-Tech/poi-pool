@@ -4,11 +4,6 @@ pragma solidity ^0.8.3;
 contract ArrayLengthComparator {
 
   uint256[] private lengths;
-  uint256 private sumLength;
-
-  constructor() {
-      sumLength = 0;
-  }
 
   function add(string[] calldata _array) public returns (ArrayLengthComparator) {
     _add(_array.length);
@@ -27,7 +22,6 @@ contract ArrayLengthComparator {
 
   function _add(uint256 _length) internal {
     lengths.push(_length);
-    sumLength += _length;
   }
 
   function areEqual() public returns (bool) {
@@ -35,7 +29,12 @@ contract ArrayLengthComparator {
         return true;
     }
 
-    bool result = lengths[0] * lengths.length == sumLength;
+    uint256 sum = 0;
+    for(uint i = 0; i < lengths.length; i++) {
+      sum += lengths[i];
+    }
+
+    bool result = lengths[0] * lengths.length == sum;
 
     delete lengths;
     return result;
