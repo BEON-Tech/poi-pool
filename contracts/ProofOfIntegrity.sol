@@ -109,7 +109,7 @@ contract ProofOfIntegrity is Initializable {
     return certifiers[_wallet].associatedGrantedApplicationIds;
   }
 
-  function verifyCertifier(address _wallet, string calldata _firstname, string calldata _lastname, string calldata _databaseId) external view returns (bool) {
+  function verifyCertifier(address _wallet, string calldata _firstname, string calldata _lastname, uint256 _databaseId) external view returns (bool) {
     require(certifierIsRegistered(_wallet), "Invalid wallet address");
 
     return certifiers[_wallet].evidenceHash == keccak256(abi.encodePacked(_firstname, _lastname, _databaseId));
@@ -170,7 +170,7 @@ contract ProofOfIntegrity is Initializable {
     return approvedApplicants[_wallet].associatedGrantedApplicationIds;
   }
 
-  function verifyApprovedApplicant(address _wallet, string calldata _firstname, string calldata _lastname, string calldata _databaseId) external view returns (bool) {
+  function verifyApprovedApplicant(address _wallet, string calldata _firstname, string calldata _lastname, uint256 _databaseId) external view returns (bool) {
     require(approvedApplicantIsRegistered(_wallet), "Invalid wallet address");
 
     return approvedApplicants[_wallet].evidenceHash == keccak256(abi.encodePacked(_firstname, _lastname, _databaseId));
