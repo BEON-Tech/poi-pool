@@ -41,10 +41,10 @@ contract ProofOfIntegrity is Initializable {
   address public governor;
   mapping(address => Certifier) public certifiers;
   mapping(address => Applicant) public approvedApplicants;
-  mapping(uint256 => Application) grantedApplications;
-  address[] public certifiersAccounts;
-  address[] public approvedApplicantsAccounts;
-  uint256[] public grantedApplicationIds;
+  mapping(uint256 => Application) public grantedApplications;
+  address[] private certifiersAccounts;
+  address[] private approvedApplicantsAccounts;
+  uint256[] private grantedApplicationIds;
 
   /// @dev Verifies that the sender has ability to modify governed parameters.
   modifier onlyByGovernor() {
