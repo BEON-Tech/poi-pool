@@ -268,8 +268,50 @@ describe("Token contract", function () {
             expect(grantedApplications[1]).to.equal(applicationIds[1]);
         });
 
-        it("Should fail while trying to register granted applications using invalid addresses", async function() {
-            // TODO
+        it("Should fail while trying to register a granted application using invalid addresses", async function() {
+            await hardhatContract.addCertifier("TestCertifierFirstname", "TestCertifierLastname", generateRandomId(), address1.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname", "TestApplicantLastname", generateRandomId(), address2.address);
+
+            await expect(hardhatContract.addGrantedApplication(address3.address, address2.address, generateRandomId()))
+                .to.be.revertedWith("Invalid certifier wallet address");
+
+            await expect(hardhatContract.addGrantedApplication(address1.address, address4.address, generateRandomId()))
+                .to.be.revertedWith("Invalid applicant wallet address");
+        });
+
+        it("Should fail while trying to register a granted application with the same application ID twice", async function() {
+            await hardhatContract.addCertifier("TestCertifierFirstname", "TestCertifierLastname", generateRandomId(), address1.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname", "TestApplicantLastname", generateRandomId(), address2.address);
+
+            const applicationId = generateRandomId();
+            hardhatContract.addGrantedApplication(address1.address, address2.address, applicationId)
+
+            await expect(hardhatContract.addGrantedApplication(address1.address, address2.address, applicationId))
+                .to.be.revertedWith("Application ID already in use");
+        });
+
+        it("Should confirm the applications assigned to certifiers and applicants", async function() {
+            await hardhatContract.addCertifier("TestCertifierFirstname", "TestCertifierLastname", generateRandomId(), address1.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname1", "TestApplicantLastname1", generateRandomId(), address2.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname2", "TestApplicantLastname2", generateRandomId(), address3.address);
+
+            const certifiersWallets = [address1.address, address1.address];
+            const applicantsWallets = [address2.address, address3.address];
+            const applicationIds = [generateRandomId(), generateRandomId()];
+            hardhatContract.addGrantedApplications(certifiersWallets, applicantsWallets, applicationIds);
+
+            const certifierApplicationIds = await hardhatContract.getCertifierApplicationIds(address1.address);
+            expect(certifierApplicationIds.length).to.equal(2);
+            expect(certifierApplicationIds[0].toString()).to.equal(applicationIds[0].toString());
+            expect(certifierApplicationIds[1].toString()).to.equal(applicationIds[1].toString());
+
+            const firstApplicantApplicationIds = await hardhatContract.getApprovedApplicantApplicationIds(address2.address);
+            expect(firstApplicantApplicationIds.length).to.equal(1);
+            expect(firstApplicantApplicationIds[0].toString()).to.equal(applicationIds[0].toString());
+            
+            const secondApplicantApplicationIds = await hardhatContract.getApprovedApplicantApplicationIds(address3.address);
+            expect(secondApplicantApplicationIds.length).to.equal(1);
+            expect(secondApplicantApplicationIds[0].toString()).to.equal(applicationIds[1].toString());
         });
     });
 
