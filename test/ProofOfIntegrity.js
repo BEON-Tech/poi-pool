@@ -13,9 +13,10 @@ describe("Token contract", function () {
     let address1;
     let address2;
     let address3;
+    let address4;
 
     beforeEach(async function () {
-        [governor, address1, address2, address3] = await ethers.getSigners();
+        [governor, address1, address2, address3, address4] = await ethers.getSigners();
         Contract = await ethers.getContractFactory("ProofOfIntegrity");
         
         // We must deploy a proxy for this contract
@@ -35,7 +36,7 @@ describe("Token contract", function () {
         });
     });
 
-    describe("Register Certifiers", function () {
+    describe("Certifiers", function () {
         it("Should register one certifier", async function() {
             const certifierId = generateRandomId();
 
@@ -61,6 +62,16 @@ describe("Token contract", function () {
             const certifiers = await hardhatContract.getCertifiersAccounts();
             expect(certifiers.length).to.equal(3);
             expect(certifiers[2]).to.equal(address3.address);
+        });
+
+        it("Should fail when trying to register multiple certifiers with an invalid number of arguments", async function() {
+            const firstNames = ["TestF2", "TestF3", "TestF4"];
+            const lastNames = ["TestL2", "TestL3", "TestL4"];
+            const certifierIds = [generateRandomId(), generateRandomId()];
+            const addresses = [address1.address, address2.address, address3.address];
+            
+            await expect(hardhatContract.addCertifiers(firstNames, lastNames, certifierIds, addresses))
+                .to.be.revertedWith("Invalid arrays length");
         });
 
         it("Should confirm valid / invalid certifier data", async function() {
@@ -124,7 +135,7 @@ describe("Token contract", function () {
         });
     });
 
-    describe("Register Applicants", function () {
+    describe("Applicants", function () {
         it("Should register one applicant", async function() {
             const applicantId = generateRandomId();
 
@@ -150,6 +161,16 @@ describe("Token contract", function () {
             const applicants = await hardhatContract.getApprovedApplicantsAccounts();
             expect(applicants.length).to.equal(3);
             expect(applicants[1]).to.equal(address2.address);
+        });
+
+        it("Should fail when trying to register multiple applicants with an invalid number of arguments", async function() {
+            const firstNames = ["TestF2", "TestF3", "TestF4"];
+            const lastNames = ["TestL2", "TestL3", "TestL4"];
+            const applicantIds = [generateRandomId(), generateRandomId(), generateRandomId()];
+            const addresses = [address1.address, address2.address];
+
+            await expect(hardhatContract.addApprovedApplicants(firstNames, lastNames, applicantIds, addresses))
+                .to.be.revertedWith("Invalid arrays length");
         });
 
         it("Should confirm valid / invalid applicant data", async function() {
@@ -210,6 +231,45 @@ describe("Token contract", function () {
 
             const invalidResult = await hardhatContract.approvedApplicantIsRegistered(address2.address);
             await expect(invalidResult).to.equal(false);
+        });
+        
+    });
+
+    describe("Granted Applications", function () {
+        it("Should register one granted application", async function() {
+            await hardhatContract.addCertifier("TestCertifierFirstname", "TestCertifierLastname", generateRandomId(), address1.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname", "TestApplicantLastname", generateRandomId(), address2.address);
+
+            const applicationId = generateRandomId();
+            await expect(hardhatContract.addGrantedApplication(address1.address, address2.address, applicationId))
+                .to.emit(hardhatContract, "ApplicationsAdded")
+                .withArgs(1);
+
+            const grantedApplications = await hardhatContract.getGrantedApplicationIds();
+            expect(grantedApplications.length).to.equal(1);
+            expect(grantedApplications[0]).to.equal(applicationId);
+        });
+
+        it("Should register multiple granted applications", async function() {
+            await hardhatContract.addCertifier("TestCertifierFirstname", "TestCertifierLastname", generateRandomId(), address1.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname1", "TestApplicantLastname1", generateRandomId(), address2.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname2", "TestApplicantLastname2", generateRandomId(), address3.address);
+            await hardhatContract.addApprovedApplicant("TestApplicantFirstname3", "TestApplicantLastname3", generateRandomId(), address4.address);
+
+            let certifiersWallets = [address1.address, address1.address, address1.address];
+            let applicantsWallets = [address2.address, address3.address, address4.address];
+            let applicationIds = [generateRandomId(), generateRandomId(), generateRandomId()];
+            await expect(hardhatContract.addGrantedApplications(certifiersWallets, applicantsWallets, applicationIds))
+                .to.emit(hardhatContract, "ApplicationsAdded")
+                .withArgs(3);
+
+            const grantedApplications = await hardhatContract.getGrantedApplicationIds();
+            expect(grantedApplications.length).to.equal(3);
+            expect(grantedApplications[1]).to.equal(applicationIds[1]);
+        });
+
+        it("Should fail while trying to register granted applications using invalid addresses", async function() {
+            // TODO
         });
     });
 
