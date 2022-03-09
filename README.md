@@ -6,7 +6,7 @@
 
     ```sh
     $ git clone https://github.com/BEON-Tech-Studio/poi-pool.git
-    $ cd ubi
+    $ cd poi-pool
     ```
 
 2. Install Dependencies
