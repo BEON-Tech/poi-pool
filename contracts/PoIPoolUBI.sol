@@ -18,10 +18,7 @@ interface IUBI {
       bool transferred
     );
   function withdrawFromStream(uint256 streamId)
-    external
-    returns (
-      bool withdrawn
-    );
+    external;
 }
 
 contract PoIPoolUBI is Initializable {
@@ -30,12 +27,12 @@ contract PoIPoolUBI is Initializable {
 
   /* Events */
 
-  event UBIClaimed(uint256 totalStreams);
   event UBIDistributed(uint256 totalHumans, uint256 totalUBI);
 
   /* Storage */
-  IUBI public ubi;
+  
   address public governor;
+  IUBI public ubi;
   uint256 public maxUBIPerRecipient;
 
   /// @dev Verifies that the sender has ability to modify governed parameters.
@@ -47,22 +44,18 @@ contract PoIPoolUBI is Initializable {
   /* Initializer */
 
   function initialize(IUBI _ubi, uint256 _maxUBIPerRecipient) public initializer {
+    governor = msg.sender;
     ubi = _ubi;
     maxUBIPerRecipient = _maxUBIPerRecipient;
-    governor = msg.sender;
   }
 
   function claimUBIFromStreams(uint256[] calldata _streamIds) external onlyByGovernor returns (bool) {
-    uint256 totalStreams = 0;
+    require(address(ubi) != address(0x00), "UBI contract has not been assigned");
+    require(_streamIds.length > 0, "Number of Stream IDs must be greater than zero");
     for(uint i = 0; i < _streamIds.length; i++) {
       uint256 currentStream = _streamIds[i];
-      if(ubi.withdrawFromStream(currentStream)) {
-        totalStreams++;
-      }
+      ubi.withdrawFromStream(currentStream);
     }
-
-    emit UBIClaimed(totalStreams);
-
     return true;
   }
 
