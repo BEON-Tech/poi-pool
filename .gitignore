@@ -11,4 +11,5 @@ coverageEnv/
 scTopics
 .DS_Store
 .openzeppelin
-
+package-lock.json
+.env

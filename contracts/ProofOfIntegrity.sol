@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.3;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "./utils/ArrayLengthComparator.sol";
 
 contract ProofOfIntegrity is Initializable {
 
@@ -79,8 +78,7 @@ contract ProofOfIntegrity is Initializable {
    * @param _wallets An array of addresses with the list of certifiers' wallets.
    */
   function addCertifiers(string[] calldata _firstnames, string[] calldata _lastnames, uint256[] calldata _databaseIds, address[] calldata _wallets) external onlyByGovernor {
-    ArrayLengthComparator comparator = new ArrayLengthComparator();
-    require(comparator.add(_firstnames).add(_lastnames).add(_databaseIds).add(_wallets).areEqual(), "Invalid arrays length");
+    require(_firstnames.length == _lastnames.length && _firstnames.length == _databaseIds.length && _firstnames.length == _wallets.length , "Invalid arrays length");
  
     for(uint i = 0; i < _firstnames.length; i++) {
       _addCertifier(_firstnames[i], _lastnames[i], _databaseIds[i], _wallets[i]);
@@ -166,8 +164,7 @@ contract ProofOfIntegrity is Initializable {
    * @param _wallets An array of addresses with the list of applicants' wallets.
    */
   function addApprovedApplicants(string[] calldata _firstnames, string[] calldata _lastnames, uint256[] calldata _databaseIds, address[] calldata _wallets) external onlyByGovernor {
-    ArrayLengthComparator comparator = new ArrayLengthComparator();
-    require(comparator.add(_firstnames).add(_lastnames).add(_databaseIds).add(_wallets).areEqual(), "Invalid arrays length");
+    require(_firstnames.length == _lastnames.length && _firstnames.length == _databaseIds.length && _firstnames.length == _wallets.length , "Invalid arrays length");
 
     for(uint i = 0; i < _firstnames.length; i++) {
       _addApprovedApplicant(_firstnames[i], _lastnames[i], _databaseIds[i], _wallets[i]);
@@ -251,8 +248,7 @@ contract ProofOfIntegrity is Initializable {
    * @param _databaseIds An array of addresses with the list of applicants' wallets.
    */
   function addGrantedApplications(address[] calldata _certifierWallets, address[] calldata _applicantWallets, uint256[] calldata _databaseIds) external onlyByGovernor {
-    ArrayLengthComparator comparator = new ArrayLengthComparator();
-    require(comparator.add(_certifierWallets).add(_applicantWallets).add(_databaseIds).areEqual(), "Invalid arrays length");
+    require(_certifierWallets.length == _applicantWallets.length && _certifierWallets.length == _databaseIds.length, "Invalid arrays length");
 
     for(uint i = 0; i < _certifierWallets.length; i++) {
       _addGrantedApplication(_certifierWallets[i], _applicantWallets[i], _databaseIds[i]);
