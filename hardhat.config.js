@@ -6,7 +6,7 @@ require("@nomiclabs/hardhat-ethers");
 require('@openzeppelin/hardhat-upgrades');
 require("hardhat-gas-reporter");
 require("solidity-coverage");
-import "dotenv.config";
+require("dotenv").config();
 
 // Please set variables in .env file
 module.exports = {
