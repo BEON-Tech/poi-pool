@@ -13,3 +13,5 @@ scTopics
 .openzeppelin
 package-lock.json
 .env
+typechain
+.vscode

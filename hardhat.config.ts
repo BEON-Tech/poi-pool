@@ -2,11 +2,12 @@ require('@nomiclabs/hardhat-etherscan');
 require('@nomiclabs/hardhat-truffle5');
 require('@nomiclabs/hardhat-solhint');
 require('@nomiclabs/hardhat-waffle');
-require('@nomiclabs/hardhat-ethers');
 require('@openzeppelin/hardhat-upgrades');
 require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("dotenv").config();
+require("@typechain/hardhat");
+import '@nomiclabs/hardhat-ethers'
 
 // Please set variables in .env file
 module.exports = {
@@ -47,6 +48,11 @@ module.exports = {
         },
       },
     ],
+  },
+  paths: {
+    sources: 'contracts',
+    cache: 'cache',
+    tests: 'test',
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

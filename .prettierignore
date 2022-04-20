@@ -7,6 +7,7 @@
 .env.example
 .env
 .DS_STORE
+.vscode
 workspace.code-workspace
 codechecks.yml
 
@@ -16,6 +17,7 @@ coverage.json
 artifacts
 cache
 typechained
+typechain
 deployments
 
 # JS
