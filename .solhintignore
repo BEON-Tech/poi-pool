@@ -3,6 +3,8 @@ artifacts/
 cache/
 deployments/
 node_modules/
+typechain/
+.vscode/
 
 yarn.lock
 coverage.json
