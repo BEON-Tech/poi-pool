@@ -1,13 +1,16 @@
 {
-    "extends": "solhint:recommended",
-    "plugins": ["prettier"],
-    "rules": {
-      "prettier/prettier": "error",
-      "compiler-version": ["off"],
-      "constructor-syntax": "warn",
-      "quotes": ["error", "single"],
-      "func-visibility": ["warn", { "ignoreConstructors": true }],
-      "not-rely-on-time": "off",
-      "private-vars-leading-underscore": ["warn", { "strict": false }]
-    }
+  "extends": "solhint:recommended",
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "constructor-syntax": "warn",
+    "quotes": ["error", "single"],
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "not-rely-on-time": "off",
+    "reason-string": "off",
+    "func-param-name-mixedcase": "warn",
+    "modifier-name-mixedcase": "warn",
+    "ordering": "off",
+    "const-name-snakecase": "warn"
   }
+}

@@ -1,55 +1,36 @@
 const deploymentParams = require('../deployment-params');
 
 async function main() {
-
   const [deployer] = await ethers.getSigners();
 
-  console.log(
-    "Deploying contracts with the account:",
-    deployer.address
-  );
-  
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+  console.log('Deploying contracts with the account:', deployer.address);
 
-  const PoolUBI = await ethers.getContractFactory("PoIPoolUBI");
-  console.log("Deploying PoIPoolUBI...");
+  console.log('Account balance:', (await deployer.getBalance()).toString());
 
-  const poolUBI = await upgrades.deployProxy(
-    PoolUBI,
-    [
-      deploymentParams.UBI_TOKEN_ADDRESS,
-      deploymentParams.MAX_UBI_PER_RECIPIENT
-    ],
-    {
-      initializer: 'initialize',
-      unsafeAllowCustomTypes: true
-    }
-  );
+  const PoolUBI = await ethers.getContractFactory('PoIPoolUBI');
+  console.log('Deploying PoIPoolUBI...');
 
-  console.log("PoIPoolUBI deployed to:", poolUBI.address);
+  const poolUBI = await upgrades.deployProxy(PoolUBI, [deploymentParams.UBI_TOKEN_ADDRESS, deploymentParams.MAX_UBI_PER_RECIPIENT], {
+    initializer: 'initialize',
+    unsafeAllowCustomTypes: true,
+  });
 
-  const PoolERC20 = await ethers.getContractFactory("PoIPoolERC20");
-  console.log("Deploying PoolERC20...");
+  console.log('PoIPoolUBI deployed to:', poolUBI.address);
 
-  const poolERC20 = await upgrades.deployProxy(
-    PoolERC20,
-    [
-      deploymentParams.SWAP_ROUTER_ADDRESS,
-      deploymentParams.DAI,
-      deploymentParams.WETH9
-    ],
-    {
-      initializer: 'initialize',
-      unsafeAllowCustomTypes: true
-    }
-  );
+  const PoolERC20 = await ethers.getContractFactory('PoIPoolERC20');
+  console.log('Deploying PoolERC20...');
 
-  console.log("PoolERC20 deployed to:", poolERC20.address);
+  const poolERC20 = await upgrades.deployProxy(PoolERC20, [deploymentParams.SWAP_ROUTER_ADDRESS, deploymentParams.DAI, deploymentParams.WETH9], {
+    initializer: 'initialize',
+    unsafeAllowCustomTypes: true,
+  });
+
+  console.log('PoolERC20 deployed to:', poolERC20.address);
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });
