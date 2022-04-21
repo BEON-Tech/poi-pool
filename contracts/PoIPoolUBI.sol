@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.3;
+pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "hardhat/console.sol";
 
 interface IUBI {
   function balanceOf(address _human) 
@@ -22,8 +20,6 @@ interface IUBI {
 }
 
 contract PoIPoolUBI is Initializable {
-
-  using SafeMath for uint256;
 
   /* Events */
 
@@ -50,7 +46,7 @@ contract PoIPoolUBI is Initializable {
   }
 
   function claimUBIFromStreams(uint256[] calldata _streamIds) external onlyByGovernor returns (bool) {
-    require(address(ubi) != address(0x00), "UBI contract has not been assigned");
+    assert(address(ubi) != address(0x0));
     require(_streamIds.length > 0, "Number of Stream IDs must be greater than zero");
     for(uint i = 0; i < _streamIds.length; i++) {
       uint256 currentStream = _streamIds[i];
@@ -71,7 +67,7 @@ contract PoIPoolUBI is Initializable {
     require(address(ubi) != address(0x00), "UBI contract has not been assigned");
     require(_totalRecipients > 0, "Total recipients must be greater than zero");
     require(_humans.length <= _totalRecipients, "Number of humans must be greater than total recipients");
-    uint256 valueToDistribute = ubi.balanceOf(address(this)).div(_totalRecipients);
+    uint256 valueToDistribute = ubi.balanceOf(address(this)) / _totalRecipients;
     if(valueToDistribute > maxUBIPerRecipient) {
       valueToDistribute = maxUBIPerRecipient;
     }
@@ -83,7 +79,7 @@ contract PoIPoolUBI is Initializable {
       address currentHuman = _humans[i];
       if(ubi.transfer(currentHuman, valueToDistribute)) {
         totalHumans++;
-        totalTransferred = totalTransferred.add(valueToDistribute);
+        totalTransferred += valueToDistribute;
       }
     }
 

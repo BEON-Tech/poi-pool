@@ -6,26 +6,17 @@ require("@nomiclabs/hardhat-ethers");
 require('@openzeppelin/hardhat-upgrades');
 require("hardhat-gas-reporter");
 require("solidity-coverage");
+require("dotenv").config();
 
-// Go to https://infura.io/ and create a new project
-// Replace this with your Infura project ID
-const INFURA_API_KEY = "";
-
-// Replace this private key with your Kovan account private key
-// To export your private key from Metamask, open Metamask and
-// go to Account Details > Export Private Key
-// Be aware of NEVER putting real Ether into testing accounts
-const KOVAN_PRIVATE_KEY = "";
-const ETHERSCAN_API_KEY = "";
-
+// Please set variables in .env file
 module.exports = {
   networks: {
     develop: {
       url: "http://localhost:8545",
     },
     /*kovan: {
-      url: `https://kovan.infura.io/v3/${INFURA_API_KEY}`,
-      accounts: [`0x${KOVAN_PRIVATE_KEY}`],
+      url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: [`0x${process.env.KOVAN_PRIVATE_KEY}`],
       gasMultiplier: 3
     },*/
     coverage: {
@@ -34,7 +25,7 @@ module.exports = {
   },
   solidity: {
     compilers: [{
-      version: "0.8.3",
+      version: "0.8.13",
       settings: {
         optimizer: {
           enabled: true,
@@ -54,7 +45,7 @@ module.exports = {
     }]
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY
   },
   mocha: {
     timeout: 100000

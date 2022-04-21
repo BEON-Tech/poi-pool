@@ -1,0 +1,33 @@
+ General
+.prettierignore
+.solhintignore
+.husky
+.gitignore
+.gitattributes
+.env.example
+.env
+.DS_STORE
+workspace.code-workspace
+codechecks.yml
+
+# Hardhat
+coverage
+coverage.json
+artifacts
+cache
+typechained
+deployments
+
+# JS
+node_modules
+package-lock.json
+yarn.lock
+
+.openzeppelin/
+artifacts/
+cache/
+deployments/
+node_modules/
+
+yarn.lock
+coverage.json
