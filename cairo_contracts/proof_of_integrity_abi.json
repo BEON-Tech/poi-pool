@@ -1,0 +1,71 @@
+[
+    {
+        "members": [
+            {
+                "name": "applicant_id",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "registration_date",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "evidence_hash",
+                "offset": 2,
+                "type": "felt"
+            }
+        ],
+        "name": "Applicant",
+        "size": 3,
+        "type": "struct"
+    },
+    {
+        "inputs": [
+            {
+                "name": "wallet_address_low",
+                "type": "felt"
+            },
+            {
+                "name": "wallet_address_high",
+                "type": "felt"
+            },
+            {
+                "name": "firstname",
+                "type": "felt"
+            },
+            {
+                "name": "lastname",
+                "type": "felt"
+            },
+            {
+                "name": "database_id",
+                "type": "felt"
+            }
+        ],
+        "name": "add_approved_applicant",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "wallet_address_low",
+                "type": "felt"
+            },
+            {
+                "name": "wallet_address_high",
+                "type": "felt"
+            }
+        ],
+        "name": "get_approved_applicant",
+        "outputs": [
+            {
+                "name": "applicant",
+                "type": "Applicant"
+            }
+        ],
+        "type": "function"
+    }
+]
