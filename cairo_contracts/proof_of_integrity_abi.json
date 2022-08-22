@@ -2,6 +2,23 @@
     {
         "members": [
             {
+                "name": "wallet_address_low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "wallet_address_high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Wallet",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
                 "name": "applicant_id",
                 "offset": 0,
                 "type": "felt"
@@ -46,12 +63,8 @@
     {
         "inputs": [
             {
-                "name": "wallet_address_low",
-                "type": "felt"
-            },
-            {
-                "name": "wallet_address_high",
-                "type": "felt"
+                "name": "wallet",
+                "type": "Wallet"
             },
             {
                 "name": "firstname",
@@ -73,12 +86,8 @@
     {
         "inputs": [
             {
-                "name": "wallet_address_low",
-                "type": "felt"
-            },
-            {
-                "name": "wallet_address_high",
-                "type": "felt"
+                "name": "wallet",
+                "type": "Wallet"
             }
         ],
         "name": "get_approved_applicant",
@@ -88,17 +97,43 @@
                 "type": "Applicant"
             }
         ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
             {
-                "name": "wallet_address_low",
+                "name": "position",
                 "type": "felt"
-            },
+            }
+        ],
+        "name": "get_approved_applicant_wallet",
+        "outputs": [
             {
-                "name": "wallet_address_high",
+                "name": "wallet",
+                "type": "Wallet"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_approved_applicants_length",
+        "outputs": [
+            {
+                "name": "length",
                 "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "wallet",
+                "type": "Wallet"
             },
             {
                 "name": "firstname",
@@ -120,12 +155,8 @@
     {
         "inputs": [
             {
-                "name": "wallet_address_low",
-                "type": "felt"
-            },
-            {
-                "name": "wallet_address_high",
-                "type": "felt"
+                "name": "wallet",
+                "type": "Wallet"
             }
         ],
         "name": "get_certifier",
@@ -135,6 +166,36 @@
                 "type": "Certifier"
             }
         ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "position",
+                "type": "felt"
+            }
+        ],
+        "name": "get_certifier_wallet",
+        "outputs": [
+            {
+                "name": "wallet",
+                "type": "Wallet"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_certifiers_length",
+        "outputs": [
+            {
+                "name": "length",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     }
 ]
